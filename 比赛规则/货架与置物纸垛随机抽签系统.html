@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>货架与置物纸垛随机抽签系统</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #1a2a6c;
+        }
+        
+        h1 {
+            color: #1a2a6c;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #b21f1f;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .results-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .result-section {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .result-section:hover {
+            transform: translateY(-5px);
+        }
+        
+        .section-title {
+            text-align: center;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #b21f1f;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .grid-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .grid-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .grid-item h3 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .grid-item p {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #b21f1f;
+        }
+        
+        .empty-area {
+            color: #000 !important;
+            font-size: 2.5rem !important;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .draw-btn {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .draw-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .draw-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .result-info {
+            background: linear-gradient(to right, #fdbb2d, #b21f1f);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-info h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .result-info p {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .animation-area {
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 8px solid rgba(26, 42, 108, 0.3);
+            border-top: 8px solid #1a2a6c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .results-container {
+                flex-direction: column;
+            }
+            
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>货架与置物纸垛随机抽签系统</h1>
+            <p class="subtitle">点击抽签按钮，随机分配货箱到货架，并随机分配置物纸垛到场地（其中一个区域空缺）</p>
+        </header>
+        
+        <div class="animation-area">
+            <div class="spinner" id="spinner"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="draw-btn" id="drawBtn">开始抽签</button>
+        </div>
+        
+        <div class="results-container">
+            <div class="result-section">
+                <h2 class="section-title">货架分配结果</h2>
+                <div class="grid-container" id="shelfGrid">
+                    <!-- 货架分配结果将通过JS动态生成 -->
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="section-title">置物纸垛场地分配</h2>
+                <div class="grid-container" id="areaGrid">
+                    <!-- 场地分配结果将通过JS动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="result-info">
+            <h3>空缺区域</h3>
+            <p id="emptyArea">等待抽签...</p>
+        </div>
+        
+        <footer>
+            <p>货架与置物纸垛随机抽签系统 &copy; 2023</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const drawBtn = document.getElementById('drawBtn');
+            const spinner = document.getElementById('spinner');
+            const shelfGrid = document.getElementById('shelfGrid');
+            const areaGrid = document.getElementById('areaGrid');
+            const emptyArea = document.getElementById('emptyArea');
+            
+            // 初始化页面
+            initializePage();
+            
+            drawBtn.addEventListener('click', function() {
+                // 显示加载动画
+                spinner.style.display = 'block';
+                drawBtn.disabled = true;
+                drawBtn.textContent = '抽签中...';
+                
+                // 模拟抽签过程
+                setTimeout(() => {
+                    drawResults();
+                    spinner.style.display = 'none';
+                    drawBtn.disabled = false;
+                    drawBtn.textContent = '重新抽签';
+                }, 1500);
+            });
+            
+            function initializePage() {
+                // 初始化货架显示
+                shelfGrid.innerHTML = '';
+                for (let i = 1; i <= 6; i++) {
+                    const shelfItem = document.createElement('div');
+                    shelfItem.className = 'grid-item';
+                    shelfItem.innerHTML = `
+                        <h3>货架 ${i}</h3>
+                        <p>等待分配</p>
+                    `;
+                    shelfGrid.appendChild(shelfItem);
+                }
+                
+                // 初始化场地显示
+                areaGrid.innerHTML = '';
+                const areas = ['A区', 'B区', 'C区', 'D区', 'E区', 'F区'];
+                for (let i = 0; i < 6; i++) {
+                    const areaItem = document.createElement('div');
+                    areaItem.className = 'grid-item';
+                    areaItem.innerHTML = `
+                        <h3>${areas[i]}</h3>
+                        <p>等待分配</p>
+                    `;
+                    areaGrid.appendChild(areaItem);
+                }
+                
+                emptyArea.textContent = '等待抽签...';
+            }
+            
+            function drawResults() {
+                // 生成1-6的随机排列（货箱分配）
+                const boxes = generateRandomArray(6);
+                
+                // 更新货架分配
+                const shelfItems = shelfGrid.querySelectorAll('.grid-item');
+                for (let i = 0; i < 6; i++) {
+                    shelfItems[i].innerHTML = `
+                        <h3>货架 ${i+1}</h3>
+                        <p>${boxes[i]}#货箱</p>
+                    `;
+                }
+                
+                // 生成场地分配（1-6随机排列，其中一个为空）
+                const areaAssignments = generateRandomArray(6);
+                const emptyIndex = Math.floor(Math.random() * 6);
+                const areas = ['A区', 'B区', 'C区', 'D区', 'E区', 'F区'];
+                
+                // 更新场地分配
+                const areaItems = areaGrid.querySelectorAll('.grid-item');
+                for (let i = 0; i < 6; i++) {
+                    if (i === emptyIndex) {
+                        areaItems[i].innerHTML = `
+                            <h3>${areas[i]}</h3>
+                            <p class="empty-area">▲</p>
+                        `;
+                    } else {
+                        areaItems[i].innerHTML = `
+                            <h3>${areas[i]}</h3>
+                            <p>${areaAssignments[i]}#纸垛</p>
+                        `;
+                    }
+                }
+                
+                // 显示空缺区域
+                emptyArea.textContent = `${areas[emptyIndex]}为空缺区域`;
+            }
+            
+            // 生成1-6的随机排列
+            function generateRandomArray(length) {
+                const arr = [];
+                for (let i = 1; i <= length; i++) {
+                    arr.push(i);
+                }
+                
+                // Fisher-Yates 洗牌算法
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+                
+                return arr;
+            }
+        });
+    </script>
+</body>
+</html>
